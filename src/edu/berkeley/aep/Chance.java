@@ -1,11 +1,10 @@
 package edu.berkeley.aep;
 
-import java.util.List;
 
 /**
  * Understands the likelihood of something happening
  */
-public class Chance {
+public class Chance implements Bestable{
 
     private final float probability;
 
@@ -46,5 +45,10 @@ public class Chance {
     @Override
     public int hashCode() {
         return Float.hashCode(this.probability);
+    }
+
+    @Override
+    public boolean betterThan(Bestable other) {
+        return probability > ((Chance) other).probability;
     }
 }

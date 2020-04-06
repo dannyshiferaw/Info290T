@@ -1,42 +1,54 @@
 package edu.berkeley.aep;
 
-import java.util.Arrays;
+// Understands how to present value in different units
+public class Quantity implements Bestable {
+    private final int size;
+    private final Unit unit;
 
-import static edu.berkeley.aep.Unit.*;
-
-// how to represent a quantity in units
-public class Quantity {
-
-    private double value;
-    private Unit unit;
-
-    Quantity(double value, Unit unit) {
-        this.value = value;
+    public Quantity(int size, Unit unit) {
+        this.size = size;
         this.unit = unit;
     }
 
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        if (!(other instanceof Quantity)) {
+        if (!(other instanceof Quantity)) return false;
+        return equals((Quantity) other);
+    }
+
+    public boolean equals(Quantity other) {
+        try {
+            return this.size == other.convertTo(unit);
+        } catch (RuntimeException e) {
             return false;
         }
+    }
 
-        Quantity o = (Quantity) other;
-        return this.unit.toInches(value) == o.unit.toInches(o.value);
+    private int convertTo(Unit toUnits) {
+        try {
+            return unit.convertTo(toUnits, size);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return size + " " + unit;
     }
 
     @Override
     public int hashCode() {
-        return Double.hashCode(value);
+        return Integer.hashCode(size);
     }
 
     public Quantity add(Quantity other) {
-        if (Arrays.asList(new Unit[]{TBSP, TSP, OZ, CUP}).contains(this.unit)) {
-            return new Quantity(this.unit.toTSP(value) + other.unit.toTSP(other.value), TBSP);
-        } else {
-            return new Quantity(this.unit.toInches(value) + other.unit.toTSP(other.value), INCHES);
-        }
+        return new Quantity(size + other.convertTo(unit), unit);
+    }
 
+    @Override
+    public boolean betterThan(Bestable other) {
+        return this.size > ((Quantity) other).convertTo(this.unit);
     }
 }
