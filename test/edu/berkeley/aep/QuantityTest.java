@@ -2,8 +2,14 @@ package edu.berkeley.aep;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.InputMismatchException;
+import java.util.LinkedList;
+import java.util.List;
+
 import static edu.berkeley.aep.Unit.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class QuantityTest {
 
@@ -51,7 +57,7 @@ public class QuantityTest {
     }
 
     @Test
-    public void twoInchesPlustwoInchesIsFour() {
+    public void twoInchesPlusTwoInchesIsFourInches() {
         Quantity twoInches = new Quantity(2, INCHES);
         Quantity expected = new Quantity(4, INCHES);
         assertEquals(expected, twoInches.add(twoInches));
@@ -65,15 +71,50 @@ public class QuantityTest {
         assertEquals(expected, twoTBSP.add(oz));
     }
 
-    @Test(expected =  RuntimeException.class)
-    public void shouldNotBeAbleToAddFourOzandTwoInches() {
+    @Test(expected = InputMismatchException.class)
+    public void shouldNotBeAbleToAddFourOzAndTwoInches() {
         Quantity oz = new Quantity(4, OZ);
         Quantity twoInches = new Quantity(2, INCHES);
         oz.add(twoInches);
     }
 
+    @Test
+    public void fiveInchesIsBetterThanThreeTwoOneInches() {
+        Quantity fiveInches = new Quantity(5, INCHES);
+        Quantity[] quantities = new Quantity[]{
+                fiveInches,
+                new Quantity(1, INCHES),
+                new Quantity(2, INCHES),
+                new Quantity(3, INCHES)
 
+        };
+        Bester bester = new Bester(quantities);
+        assertEquals(fiveInches, bester.best());
+    }
 
+    @Test
+    public void OneYardIsGreaterThanOneFeetAndOneInches() {
+        Quantity oneYard = new Quantity(1, YARD);
+        Quantity[] quantities = new Quantity[]{
+                oneYard,
+                new Quantity(1, INCHES),
+                new Quantity(1, FEET)
+
+        };
+        Bester bester = new Bester(quantities);
+        assertEquals(oneYard, bester.best());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void comparingDifferentTypesOfQuantitiesShouldThrowException() {
+        Quantity[] quantities = new Quantity[]{
+                new Quantity(1, TBSP),
+                new Quantity(1, INCHES),
+                new Quantity(1, FEET)
+        };
+        Bester bester = new Bester(quantities);
+        bester.best();
+    }
 
 
 }

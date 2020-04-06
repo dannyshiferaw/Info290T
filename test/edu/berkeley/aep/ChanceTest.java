@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static edu.berkeley.aep.Unit.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -52,5 +53,18 @@ public class ChanceTest {
             Chance event2 = new Chance(p2);
             assertEquals(event1.or(event2), new Chance((p1 + p2) - (p1 * p2)));
         }
+    }
+
+    @Test
+    public void test1ProbabilityIsGreatest() {
+        Chance definite = new Chance(1);
+        Chance[] chances = new Chance[]{
+                definite,
+                new Chance(0.5f),
+                new Chance(0)
+
+        };
+        Bester bester = new Bester(chances);
+        assertEquals(definite, bester.best());
     }
 }
